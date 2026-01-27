@@ -1,0 +1,42 @@
+## Interface: 120000
+## Title: Click Casting Tooltip
+## Notes: Add tooltips to identify spells and macros shortcuts for Click-Cast Bindings.
+## Category-enUS: User Interface
+## Category-deDE: Benutzerinterface
+## Category-esES: Interfaz de usuario
+## Category-esMX: Interfaz de usuario
+## Category-frFR: Interface utilisateur
+## Category-itIT: Interfaccia utente
+## Category-koKR: 사용자 인터페이스
+## Category-ptBR: Interface do usuário
+## Category-ruRU: Интерфейс пользователя
+## Category-zhCN: 用户界面
+## Category-zhTW: 使用者介面
+## Author: Thiago Franco (Topolino)
+## Version: 1.0.0
+## RequiredDeps:
+## X-Curse-Project-ID: 1445770
+## SavedVariables: ClickCastingTooltipSharedDB
+## SavedVariablesPerCharacter: ClickCastingTooltipDB
+## IconTexture: Interface\AddOns\ClickCastingTooltip\CCTIcon.png
+
+# Libraries
+Libs\embeds.xml
+Libs\LibStub\LibStub.lua
+Libs\LibSharedMedia-3.0\lib.xml
+Libs\libdatabroker-1-1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\lib.xml
+
+#Versioning Information
+Version_Data.lua
+
+# Localization
+localization\enUS.lua
+localization\ptBR.lua
+
+# Utilities
+Utils\3rdPartyFix.lua
+
+ClickCastingTooltip.lua
+AddSpell.lua
+Settings.lua
