@@ -4,7 +4,7 @@ This is a World of Warcraft addon.
 
 Add a Healbot like tooltip panel for spells added to the Click Casting Binding feature.  
 
-Game Addon Categories: Tooltip, Action Bars, Buffs & Debuffs, Combat, Miscellaneous, Unit Frames.  
+Game Addon Categories: Tooltip, Action Bars, Buffs & Debuffs, Miscellaneous, Unit Frames.  
 
 Managing your keybinds just got a lot more intuitive. We’ve introduced a Healbot-style tooltip system for the Click Casting Binding feature, giving you instant clarity on which spells are mapped to your mouse buttons and modifiers.
 
@@ -26,8 +26,9 @@ Full Support:
 Add a healbot like tooltip for spells added to the Click Casting Binding feature.  
 Works with diferent unit frames UIs.
 Functional in party, raid, target and focus frames, for players and NPCs and even enemy targets for some spells and interrupts.  
+Drag and drop feature to add spells to the shortcut screen.
 
-**Important:** This add-on does not perform automatic spellcasting, combat shortcut configuration (key and shortcut binding), or combat action monitoring (cooldown, range, etc.). It complies with World of Warcraft add-on guidelines from version 12.0.0 (Midnight) onwards; it only displays a visual reference to what has been defined on the 'Click-to-Cast Bindings' screen and entered separately, but correspondingly, in the add-on settings.
+**Important:** This add-on does not perform automatic spellcasting, combat shortcut configuration (key and shortcut binding), or combat action monitoring (cooldown). It complies with World of Warcraft add-on guidelines from version 12.0.0 (Midnight) onwards; it only displays a visual reference to what has been defined on the 'Click-to-Cast Bindings' screen and entered separately, but correspondingly, in the add-on settings.
 
 ## Controls, Configurations, Commands and Usability Features
 Use the following slash commands to control the addon if you don't want to keep an icon on your minimap.  

@@ -40,10 +40,10 @@ local defaults = {
 function CastClickApp:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ClickCastingTooltipDB", defaults, true)
     LibStub("AceConfig-3.0"):RegisterOptionsTable(AddonName, function() return self:GetOptions() end)
-    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddonName, "Cast Click Tooltip")
-    self:RegisterChatCommand("ccc", function() 
-        Settings.OpenToCategory(self.optionsFrame:GetID()) -- Versão moderna para o menu de opções
-    end)
+    --self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddonName, "Cast Click Tooltip")
+    --self:RegisterChatCommand("ccc", function() 
+    --    Settings.OpenToCategory(self.optionsFrame:GetID()) -- Versão moderna para o menu de opções
+    --end)
 end
 
 function CastClickApp:RefreshConfig()
