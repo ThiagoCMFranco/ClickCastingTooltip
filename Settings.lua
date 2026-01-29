@@ -98,7 +98,7 @@ function CCT_LoadAbout()
     local btnOpenSpellSettings = AceGUI:Create("Button")
 
     btnOpenSpellSettings:SetText(L["buttonOpenSpellSettings"])
-    btnOpenSpellSettings:SetWidth(200)
+    btnOpenSpellSettings:SetWidth(260)
     btnOpenSpellSettings:SetCallback("OnClick", function() 
         ToggleClickBindingFrame()
     end)
@@ -141,12 +141,12 @@ function CCT_LoadSettings()
     local chkLockDragDrop = AceGUI:Create("CheckBox")
     local chkHideMinimapIcon = AceGUI:Create("CheckBox")
     local chkHideDeveloperCreditOnTooltips = AceGUI:Create("CheckBox")
+    local chkHideWhenNoActionIsBound = AceGUI:Create("CheckBox")
+    local chkHidePanelTitle = AceGUI:Create("CheckBox")
     
     chkLockDragDrop:SetLabel(L["LockDragDrop"])
     chkLockDragDrop:SetCallback("OnValueChanged", function(widget, event, text) 
         ClickCastingTooltipDB.LockDragDrop = chkLockDragDrop:GetValue()
-        CTT_updateChromieTime()
-        CTT_showMainFrame()
     end)
     chkLockDragDrop:SetWidth(700)
     scrollFrameGeneral:AddChild(chkLockDragDrop)
@@ -155,7 +155,6 @@ function CCT_LoadSettings()
     chkHideMinimapIcon:SetCallback("OnValueChanged", function(widget, event, text) 
         ClickCastingTooltipDB.HideMinimapIcon = chkHideMinimapIcon:GetValue()
         ClickCastingTooltipSharedDB.minimap.hide = ClickCastingTooltipDB.HideMinimapIcon
-        CCT_ToggleMinimapButton(chkHideMinimapIcon:GetValue())
     end)
     chkHideMinimapIcon:SetWidth(575)
     scrollFrameGeneral:AddChild(chkHideMinimapIcon)
@@ -163,15 +162,31 @@ function CCT_LoadSettings()
     chkHideDeveloperCreditOnTooltips:SetLabel(L["HideDeveloperCreditOnTooltips"])
     chkHideDeveloperCreditOnTooltips:SetCallback("OnValueChanged", function(widget, event, text) 
         ClickCastingTooltipDB.HideDeveloperCreditOnTooltips = chkHideDeveloperCreditOnTooltips:GetValue()
-        CTT_updateChromieTime()
-        CTT_showMainFrame()
      end)
     chkHideDeveloperCreditOnTooltips:SetWidth(700)
     scrollFrameGeneral:AddChild(chkHideDeveloperCreditOnTooltips)
+
+    chkHideWhenNoActionIsBound:SetLabel(L["HideWhenNoActionIsBound"])
+    chkHideWhenNoActionIsBound:SetCallback("OnValueChanged", function(widget, event, text) 
+        ClickCastingTooltipDB.HideWhenNoActionIsBound = chkHideWhenNoActionIsBound:GetValue()
+     end)
+    chkHideWhenNoActionIsBound:SetWidth(700)
+    scrollFrameGeneral:AddChild(chkHideWhenNoActionIsBound)
+
+    chkHidePanelTitle:SetLabel(L["HidePanelTitle"])
+    chkHidePanelTitle:SetCallback("OnValueChanged", function(widget, event, text) 
+        ClickCastingTooltipDB.HidePanelTitle = chkHidePanelTitle:GetValue()
+        ClickCastingTooltip.UpdateDisplay()
+     end)
+    chkHidePanelTitle:SetWidth(700)
+    scrollFrameGeneral:AddChild(chkHidePanelTitle)
  
     chkLockDragDrop:SetValue(ClickCastingTooltipDB.LockDragDrop)
     chkHideMinimapIcon:SetValue(ClickCastingTooltipDB.HideMinimapIcon)
     chkHideDeveloperCreditOnTooltips:SetValue(ClickCastingTooltipDB.HideDeveloperCreditOnTooltips)
+    chkHideWhenNoActionIsBound:SetValue(ClickCastingTooltipDB.HideWhenNoActionIsBound)
+    chkHidePanelTitle:SetValue(ClickCastingTooltipDB.HidePanelTitle)
+    
 
 end
 
@@ -270,14 +285,14 @@ end
 
 --Cria atalho para as configurações na janela nativa de opções de addons.
 local ClickCastingTooltipMainPanel = CreateFrame("Frame", "ClickCastingTooltipNativeMainSettings", UIParent)
-ClickCastingTooltipMainPanel.name = L["AddonName"] .. " - " .. L["Settings"]
+ClickCastingTooltipMainPanel.name = L["AddonName_Interface"]
 
 local MainCategory, layout = Settings.RegisterCanvasLayoutCategory(ClickCastingTooltipMainPanel, ClickCastingTooltipMainPanel.name)
 Settings.RegisterAddOnCategory(MainCategory)
 
 local title = ClickCastingTooltipMainPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 title:SetPoint("TOPLEFT", 16, -16)
-title:SetText(L["AddonName"])
+title:SetText(L["AddonName_Interface"])
 
 local btnAbrirConfiguracoes = CreateFrame("Button", "OpenAce3Window", ClickCastingTooltipMainPanel, "GameMenuButtonTemplate")
 btnAbrirConfiguracoes:SetPoint("TOPLEFT", 16, -40)

@@ -34,6 +34,15 @@ end
 local name, CCT = ...
 local L = CCT.L 
 
+local StatusConfig = {
+    ["A"] = { label = L["Alied"], color = "ff00ff00" },
+    ["E"] = { label = L["Enemy"], color = "ffff0000" },
+    ["H"] = { label = L["Hostile"], color = "ffff0000" },
+    ["N"] = { label = L["Neutral"], color = "ffffff00" },
+    ["F"] = { label = L["Friendly"], color = "ff00ff00" },
+    ["S"] = { label = "-", color = "ffffffff" },
+}
+
 -- Adição do ícone de minimapa.
 ClickCastingTooltipMinimapButton = LibStub("LibDBIcon-1.0", true)
 
@@ -103,10 +112,20 @@ end
 
 local CastClickFrame = CreateFrame("Frame", "CastClickBindingHUD", UIParent, "BackdropTemplate")
 CastClickFrame:SetSize(220, 100)
-CastClickFrame:SetPoint("CENTER", 0, 0)
+--CastClickFrame:SetPoint("CENTER", 0, 0)
+C_Timer.After(0.1, function ()
+if ClickCastingTooltipDB.MainFramePosition then
+        CastClickFrame:ClearAllPoints()
+        MinhaPosicaoSalva = ClickCastingTooltipDB.MainFramePosition
+        CastClickFrame:SetPoint(MinhaPosicaoSalva.point, UIParent, MinhaPosicaoSalva.rel, MinhaPosicaoSalva.x, MinhaPosicaoSalva.y)
+    else
+        CastClickFrame:ClearAllPoints()
+        CastClickFrame:SetPoint("CENTER", 0, 0) -- Posição padrão caso seja a primeira vez
+    end
+end)
 CastClickFrame:SetMovable(true)
 CastClickFrame:EnableMouse(true)
-CastClickFrame:RegisterForDrag("RightButton")
+CastClickFrame:RegisterForDrag("LeftButton")
 CastClickFrame:SetClampedToScreen(true)
 
 -- Estilo Visual
@@ -124,13 +143,44 @@ title:SetPoint("TOPLEFT", 10, -10)
 title:SetText(L["Cast_Click_Bindings"])
 title:SetTextColor(0, 1, 0) -- Verde
 
+local unitName = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightMedium")
+C_Timer.After(0.1, function ()
+if (ClickCastingTooltipDB.HidePanelTitle) then
+    unitName:SetPoint("TOPLEFT", 10, -10)
+else
+    unitName:SetPoint("TOPLEFT", 10, -35)
+end
+end)
+--unitName:SetPoint("TOPLEFT", 10, -35)
+unitName:SetText("")
+unitName:SetTextColor(1, 1, 1)
+
+local unitType = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+C_Timer.After(0.1, function ()
+if (ClickCastingTooltipDB.HidePanelTitle) then
+    unitType:SetPoint("TOPLEFT", 10, -25)
+else
+    unitType:SetPoint("TOPLEFT", 10, -50)
+end
+end)
+--unitType:SetPoint("TOPLEFT", 10, -50)
+unitType:SetText("")
+unitType:SetTextColor(1, 1, 1)
+
 -- Tabela para armazenar as linhas de texto do frame
 CastClickFrame.Lines = {}
 
 local function UpdateHUD()
     local hasMouseover = UnitExists("mouseover")
     for _, line in ipairs(CastClickFrame.Lines) do line:Hide() end
-    if not hasMouseover then return end
+    if not hasMouseover then
+        if(ClickCastingTooltipDB.HideWhenNoActionIsBound) then
+            CastClickFrame:SetHeight(0)
+            CastClickFrame:SetWidth(0)
+        end        
+
+        return
+    end
 
     local _, playerClass = UnitClass("player")
     local classData = CastClickApp.db.profile.classes[playerClass]
@@ -156,7 +206,11 @@ local function UpdateHUD()
             CastClickFrame.Lines[lineIndex] = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightMedium")
         end
         local header = CastClickFrame.Lines[lineIndex]
-        header:SetPoint("TOPLEFT", 10, -20 - (lineIndex * 15))
+        if (ClickCastingTooltipDB.HidePanelTitle) then
+            header:SetPoint("TOPLEFT", 10, -30 - (lineIndex * 15))
+        else
+            header:SetPoint("TOPLEFT", 10, -60 - (lineIndex * 15))
+        end
         local prefix = activationKeys
             :gsub("C", "|cff00ccffCtrl|r ")
             :gsub("S", "|cffff7d0aShift|r ")
@@ -176,7 +230,12 @@ local function UpdateHUD()
                         CastClickFrame.Lines[lineIndex] = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightMedium")
                     end
                     local fs = CastClickFrame.Lines[lineIndex]
-                    fs:SetPoint("TOPLEFT", 25, -20 - (lineIndex * 15))
+                    
+        if (ClickCastingTooltipDB.HidePanelTitle) then
+            fs:SetPoint("TOPLEFT", 25, -30 - (lineIndex * 15))
+        else
+            fs:SetPoint("TOPLEFT", 25, -60 - (lineIndex * 15))
+        end
 
                     local r, g, b = 1, 1, 1
                     local status = ""
@@ -185,6 +244,29 @@ local function UpdateHUD()
                     if info.Type == "macro" then
                         r, g, b = 0.5, 0.8, 1
                         displayName = displayName .. " [M]"
+                    else
+                        local inRange = C_Spell.IsSpellInRange(info.ID, "mouseover")
+                        local canAttack = UnitCanAttack("player","mouseover")
+                        local canAssist = UnitCanAssist("player","mouseover")
+                        local isHelpful = C_Spell.IsSpellHelpful(info.SpellName)
+                        local isHarmful = C_Spell.IsSpellHarmful(info.SpellName)
+                        local idDeadOrGhost = UnitIsDeadOrGhost("mouseover")
+
+                        if not (isHelpful and canAssist) and not (isHarmful and canAttack) then
+                            if isHarmful then 
+                                r, g, b = 0.8, 0.3, 0.0
+                                status = ""--" (Alvo Inválido)"
+                            elseif isHelpful then
+                                r, g, b = 0.8, 0.3, 0.0
+                                status = ""--" (Alvo Inválido)"
+                            end
+                            
+                        end                              
+
+                        if inRange == false then
+                            r, g, b = 0.8, 0, 0 -- Vermelho: Fora de alcance
+                            status = ""--" (Fora de Alcance)"
+                        end
                     end
 
                     local click = info.Click
@@ -205,15 +287,26 @@ local function UpdateHUD()
     end
 
     if lineIndex == 1 then
-        CastClickFrame:SetHeight(50)
+        CastClickFrame:SetHeight(75)
         CastClickFrame:SetWidth(220)
+        if(ClickCastingTooltipDB.HideWhenNoActionIsBound) then
+            CastClickFrame:SetHeight(0)
+            CastClickFrame:SetWidth(0)
+        end
     else
         title:Show()
         CastClickFrame:SetBackdropColor(0, 0, 0, 0.8)
         CastClickFrame:SetBackdropBorderColor(1, 1, 1, 1)
-        CastClickFrame:SetHeight(35 + (lineIndex * 15))
+        CastClickFrame:SetHeight(75 + (lineIndex * 15))
         CastClickFrame:SetWidth(lineWidth + 40)
     end
+    
+    if (ClickCastingTooltipDB.HidePanelTitle) then
+        title:Hide()
+        CastClickFrame:SetHeight(40 + (lineIndex * 15))
+        --unitType:SetPoint("TOPLEFT", 10, -20)
+    end
+
 end
 
 -- Eventos de Arrastar
@@ -224,6 +317,8 @@ CastClickFrame:SetScript("OnDragStart", function(self)
 end)
 CastClickFrame:SetScript("OnDragStop", function(self)
    if not ClickCastingTooltipDB.LockDragDrop then
+    local point, _, relativePoint, xOfs, yOfs = self:GetPoint()
+    ClickCastingTooltipDB.MainFramePosition = { point = point, rel = relativePoint, x = xOfs, y = yOfs }
     CastClickFrame:StopMovingOrSizing()
     end 
 end)
@@ -253,3 +348,66 @@ local function SetupSlashCommands()
 end
 
 SetupSlashCommands()
+
+-- Criamos um namespace para evitar conflitos com outros addons
+local MyAddon = CreateFrame("Frame")
+MyAddon:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+
+function ValidarUnidade(unit)
+    if not UnitExists(unit) then return end
+
+    local nome = UnitName(unit)
+    local status = "S"
+
+    -- Lógica de Identificação
+    if UnitIsPlayer(unit) then
+        if UnitIsFriend("player", unit) then
+            status = "A"
+        else           
+            status = "E"
+        end
+    else
+        -- Para NPCs e Bosses
+        local reaction = UnitReaction(unit, "player")
+        if reaction and reaction <= 3 then
+            status = "H"
+        elseif reaction == 4 then
+            status = "N"
+        else
+            status = "F"
+        end
+    end
+
+    
+
+    return status
+end
+
+MyAddon:SetScript("OnEvent", function(self, event)
+    if event == "UPDATE_MOUSEOVER_UNIT" then
+        if ValidarUnidade("mouseover") and StatusConfig[ValidarUnidade("mouseover")] then
+            unitType:SetText("|c" .. StatusConfig[ValidarUnidade("mouseover")].color .. StatusConfig[ValidarUnidade("mouseover")].label .. "|r")
+            local name = UnitName("mouseover")
+            unitName:SetText(name)
+        end
+
+        if UnitIsUnit("anyenemy", "mouseover") or UnitIsUnit("anyfriend", "mouseover") or UnitIsUnit("player", "mouseover") then
+            
+        end
+
+    end
+end)
+
+function ClickCastingTooltip.UpdateDisplay() 
+    if (ClickCastingTooltipDB.HidePanelTitle) then
+        unitName:SetPoint("TOPLEFT", 10, -10)
+    else
+        unitName:SetPoint("TOPLEFT", 10, -35)
+    end
+
+    if (ClickCastingTooltipDB.HidePanelTitle) then
+        unitType:SetPoint("TOPLEFT", 10, -25)
+    else
+        unitType:SetPoint("TOPLEFT", 10, -50)
+    end
+end

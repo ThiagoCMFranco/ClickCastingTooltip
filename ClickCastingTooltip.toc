@@ -13,7 +13,7 @@
 ## Category-zhCN: 用户界面
 ## Category-zhTW: 使用者介面
 ## Author: Thiago Franco (Topolino)
-## Version: 1.0.0
+## Version: 1.1.0
 ## RequiredDeps:
 ## X-Curse-Project-ID: 1445770
 ## SavedVariables: ClickCastingTooltipSharedDB
