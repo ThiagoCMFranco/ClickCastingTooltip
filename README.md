@@ -8,11 +8,8 @@ Game Addon Categories: Tooltip, Action Bars, Buffs & Debuffs, Miscellaneous, Uni
 
 Managing your keybinds just got a lot more intuitive. We’ve introduced a Healbot-style tooltip system for the Click Casting Binding feature, giving you instant clarity on which spells are mapped to your mouse buttons and modifiers.
 
-**Seamless Integration**  
-Whether you use the default UI or a custom setup, this feature is built to adapt. It works out-of-the-box with different unit frame UIs, ensuring your workflow remains consistent regardless of your aesthetic.
-
 **Total Field Control**  
-This isn't just for healers. The tooltips are active across Party, Raid, Target, and Focus frames. It effectively tracks your bindings for:
+This isn't just for healers. The tooltips are active across Party, Raid, Target, Focus and Boss frames. It effectively tracks your bindings for:
 - Allies & NPCs: Keep your team alive and interact with friendly units with precision.
 - Enemy Targets: React faster by using click-bindings for interrupts and offensive spells directly on enemy frames.
 
@@ -24,7 +21,6 @@ Full Support:
 
 ## Main Features
 Add a healbot like tooltip for spells added to the Click Casting Binding feature.  
-Works with diferent unit frames UIs.
 Functional in party, raid, target and focus frames, for players and NPCs and even enemy targets for some spells and interrupts.  
 Drag and drop feature to add spells to the shortcut screen.
 
