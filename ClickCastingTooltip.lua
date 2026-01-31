@@ -43,6 +43,23 @@ local StatusConfig = {
     ["S"] = { label = "-", color = "ffffffff" },
 }
 
+local ClassHexColors = {
+    ["DEATHKNIGHT"] = "ffC41E3A",
+    ["DEMONHUNTER"] = "ffA330C9",
+    ["DRUID"]       = "ffFF7C0A",
+    ["EVOKER"]      = "ff33937F",
+    ["HUNTER"]      = "ffAAD372",
+    ["MAGE"]        = "ff3FC7EB",
+    ["MONK"]        = "ff00FF98",
+    ["PALADIN"]     = "ffF48CBA",
+    ["PRIEST"]      = "ffFFFFFF",
+    ["ROGUE"]       = "ffFFF468",
+    ["SHAMAN"]      = "ff0070DD",
+    ["WARLOCK"]     = "ff8788EE",
+    ["WARRIOR"]     = "ffC69B6D",
+    ["X"]           = "ffffffff",
+}
+
 -- Adição do ícone de minimapa.
 ClickCastingTooltipMinimapButton = LibStub("LibDBIcon-1.0", true)
 
@@ -142,6 +159,14 @@ local title = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight
 title:SetPoint("TOPLEFT", 10, -10)
 title:SetText(L["Cast_Click_Bindings"])
 title:SetTextColor(0, 1, 0) -- Verde
+C_Timer.After(0.1, function ()
+    if (ClickCastingTooltipDB.HidePanelTitle) then
+        title:Hide()
+    else
+        title:Show()
+    end
+    CCT_ActivateDragMode(false)
+end)
 
 local unitName = CastClickFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightMedium")
 C_Timer.After(0.1, function ()
@@ -179,6 +204,16 @@ local function UpdateHUD()
             CastClickFrame:SetWidth(0)
         end        
 
+        return
+    end
+
+    local data = GetTargetedFrameData()
+
+    if (not data) then
+        if(ClickCastingTooltipDB.HideWhenNoActionIsBound) then
+            CastClickFrame:SetHeight(0)
+            CastClickFrame:SetWidth(0)
+        end
         return
     end
 
@@ -385,20 +420,36 @@ end
 
 MyAddon:SetScript("OnEvent", function(self, event)
     if event == "UPDATE_MOUSEOVER_UNIT" then
+
+        local data = GetTargetedFrameData()
+        if (not data) then
+            return
+        end
+
         if ValidarUnidade("mouseover") and StatusConfig[ValidarUnidade("mouseover")] then
             unitType:SetText("|c" .. StatusConfig[ValidarUnidade("mouseover")].color .. StatusConfig[ValidarUnidade("mouseover")].label .. "|r")
             local name = UnitName("mouseover")
-            unitName:SetText(name)
-        end
-
-        if UnitIsUnit("anyenemy", "mouseover") or UnitIsUnit("anyfriend", "mouseover") or UnitIsUnit("player", "mouseover") then
-            
+            local level = UnitLevel("mouseover")
+            local _, className = UnitClass("mouseover")
+            local classColor = ClassHexColors["X"]
+            local u = ValidarUnidade("mouseover")
+            if(u == "A" or u == "E") then
+                classColor = ClassHexColors[className]
+            end
+            unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
         end
 
     end
 end)
 
 function ClickCastingTooltip.UpdateDisplay() 
+
+    if (ClickCastingTooltipDB.HidePanelTitle) then
+        title:Hide()
+    else
+        title:Show()
+    end
+
     if (ClickCastingTooltipDB.HidePanelTitle) then
         unitName:SetPoint("TOPLEFT", 10, -10)
     else
@@ -410,4 +461,83 @@ function ClickCastingTooltip.UpdateDisplay()
     else
         unitType:SetPoint("TOPLEFT", 10, -50)
     end
+end
+
+SLASH_IDENTIFYFRAME1 = "/idf"
+SlashCmdList["IDENTIFYFRAME"] = function()
+    local mouseFoci = GetMouseFoci()
+    local frame = mouseFoci and mouseFoci[1]
+
+    if frame then
+        local name = frame:GetName()
+        local debugName = frame:GetDebugName()
+        local un = frame.unit
+        
+        print("|cff00ccff[Identificador 12.0]|r")
+        print("|cffffd100Nome Global:|r " .. (name or "|cff888888(Nenhum)|r"))
+        print("|cffffd100Debug Name:|r " .. (debugName or "Desconhecido"))
+        print("|cffffd100Unit:|r " .. (un or "Desconhecido"))
+        
+        if frame.GetParent then
+            local parent = frame:GetParent()
+            if parent then
+                print("|cffffd100Parent:|r " .. (parent:GetName() or parent:GetDebugName()))
+            end
+        end
+    else
+        print("|cffff0000[Erro]:|r Nenhum frame detectado sob o mouse.")
+    end
+end
+
+local allowedFrames = {"TargetFrame", "PlayerFrame", "FocusFrame", "PartyFrame", "RaidFrame", "ArenaFrame"}
+
+function GetTargetedFrameData()
+
+    local mouseFoci = GetMouseFoci()
+    
+    if not mouseFoci then return nil end
+
+    for _, frame in ipairs(mouseFoci) do
+
+        local debugName = frame:GetDebugName()
+        local name = tostring(debugName or "")
+        
+        for _, allowedName in ipairs(allowedFrames) do
+
+            if(allowedName == "PartyFrame" or allowedName == "RaidFrame") then
+            
+                if string.find(name, allowedName,1,true) then
+                    return true
+                end
+            else
+                if (frame.unit and (frame.unit == "player" or frame.unit == "target" or frame.unit == "focus" or frame.unit == "targettarget" or frame.unit == "boss1" or frame.unit == "boss2" or frame.unit == "boss3" or frame.unit == "boss4" or frame.unit == "boss5")) then                    
+                    return true
+                end
+            end
+        end
+    end
+    
+    return nil
+end
+
+function CCT_ActivateDragMode(_param)
+        if _param then
+            CastClickFrame:SetHeight(0)
+            CastClickFrame:SetWidth(0)
+        else
+            CastClickFrame:SetHeight(75)
+            CastClickFrame:SetWidth(220)
+        end
+        if ValidarUnidade("player") and StatusConfig[ValidarUnidade("player")] then
+            unitType:SetText("|c" .. StatusConfig[ValidarUnidade("player")].color .. StatusConfig[ValidarUnidade("player")].label .. "|r")
+            local name = UnitName("player")
+            local level = UnitLevel("player")
+            local _, className = UnitClass("player")
+            local classColor = ClassHexColors["X"]
+            local u = ValidarUnidade("player")
+            if(u == "A" or u == "E") then
+                classColor = ClassHexColors[className]
+            end
+            unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
+        end
 end
