@@ -34,32 +34,6 @@ end
 local name, CCT = ...
 local L = CCT.L 
 
-local StatusConfig = {
-    ["A"] = { label = L["Alied"], color = "ff00ff00" },
-    ["E"] = { label = L["Enemy"], color = "ffff0000" },
-    ["H"] = { label = L["Hostile"], color = "ffff0000" },
-    ["N"] = { label = L["Neutral"], color = "ffffff00" },
-    ["F"] = { label = L["Friendly"], color = "ff00ff00" },
-    ["S"] = { label = "-", color = "ffffffff" },
-}
-
-local ClassHexColors = {
-    ["DEATHKNIGHT"] = "ffC41E3A",
-    ["DEMONHUNTER"] = "ffA330C9",
-    ["DRUID"]       = "ffFF7C0A",
-    ["EVOKER"]      = "ff33937F",
-    ["HUNTER"]      = "ffAAD372",
-    ["MAGE"]        = "ff3FC7EB",
-    ["MONK"]        = "ff00FF98",
-    ["PALADIN"]     = "ffF48CBA",
-    ["PRIEST"]      = "ffFFFFFF",
-    ["ROGUE"]       = "ffFFF468",
-    ["SHAMAN"]      = "ff0070DD",
-    ["WARLOCK"]     = "ff8788EE",
-    ["WARRIOR"]     = "ffC69B6D",
-    ["X"]           = "ffffffff",
-}
-
 -- Adição do ícone de minimapa.
 ClickCastingTooltipMinimapButton = LibStub("LibDBIcon-1.0", true)
 
@@ -218,7 +192,8 @@ local function UpdateHUD()
     end
 
     local _, playerClass = UnitClass("player")
-    local classData = CastClickApp.db.profile.classes[playerClass]
+    local currentSpec = GetSpecialization() or 1
+    local classData = CastClickApp.db.profile.classes[playerClass][currentSpec]
     if not classData then return end
 
     -- Agrupa habilidades por combinação de teclas e tipo de clique
@@ -247,9 +222,9 @@ local function UpdateHUD()
             header:SetPoint("TOPLEFT", 10, -60 - (lineIndex * 15))
         end
         local prefix = activationKeys
-            :gsub("C", "|cff00ccffCtrl|r ")
-            :gsub("S", "|cffff7d0aShift|r ")
-            :gsub("A", "|cffffff00Alt|r ")
+            :gsub("C", "|c" .. KeysColors["Ctrl"] .. "Ctrl|r ")
+            :gsub("S", "|c" .. KeysColors["Shift"] .. "Shift|r ")
+            :gsub("A", "|c" .. KeysColors["Alt"] .. "Alt|r ")
             :gsub("N", "")
         header:SetText(prefix)
         header:SetTextColor(0.8, 1, 0.8)
@@ -289,27 +264,30 @@ local function UpdateHUD()
 
                         if not (isHelpful and canAssist) and not (isHarmful and canAttack) then
                             if isHarmful then 
-                                r, g, b = 0.8, 0.3, 0.0
+                                --r, g, b = 0.8, 0.3, 0.0
+                                r, g, b = 0.8, 0, 0
                                 status = ""--" (Alvo Inválido)"
                             elseif isHelpful then
-                                r, g, b = 0.8, 0.3, 0.0
+                                --r, g, b = 0.8, 0.3, 0.0
+                                r, g, b = 0.8, 0, 0
                                 status = ""--" (Alvo Inválido)"
                             end
                             
                         end                              
 
                         if inRange == false then
-                            r, g, b = 0.8, 0, 0 -- Vermelho: Fora de alcance
+                            --r, g, b = 0.8, 0, 0 -- Vermelho: Fora de alcance
+                            r, g, b = 0.6, 0.6, 0.6 -- Cinza: Fora de alcance
                             status = ""--" (Fora de Alcance)"
                         end
                     end
 
                     local click = info.Click
-                        :gsub("Lclick", "|cffD3AF37" .. L["Lclick"] .. "|r")
-                        :gsub("Rclick", "|cffD3AF37" .. L["Rclick"] .. "|r")
-                        :gsub("Mclick", "|cffD3AF37" .. L["Mclick"] .. "|r")
-                        :gsub("clickButton4", "|cffD3AF37" .. L["clickButton4"] .. "|r")
-                        :gsub("clickButton5", "|cffD3AF37" .. L["clickButton5"] .. "|r")
+                        :gsub("Lclick", "|c" .. KeysColors["LClick"] .. L["Lclick"] .. "|r")
+                        :gsub("Rclick", "|c" .. KeysColors["RClick"] ..  L["Rclick"] .. "|r")
+                        :gsub("Mclick", "|c" .. KeysColors["MClick"] ..  L["Mclick"] .. "|r")
+                        :gsub("clickButton4", "|c" .. KeysColors["clickButton4"] .. L["clickButton4"] .. "|r")
+                        :gsub("clickButton5", "|c" .. KeysColors["clickButton5"] .. L["clickButton5"] .. "|r")
 
                     fs:SetText(string.format("%s: %s%s", click, displayName, status))
                     fs:SetTextColor(r, g, b)
@@ -436,7 +414,13 @@ MyAddon:SetScript("OnEvent", function(self, event)
             if(u == "A" or u == "E") then
                 classColor = ClassHexColors[className]
             end
-            unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
+            if (level == -1) then
+                unitName:SetText("|c" .. classColor .. name .. " " .. CreateInlineIcon("UI-HUD-UnitFrame-Target-HighLevelTarget_Icon", 10,12) .."|r")
+            else
+                unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
+            end
+
+            
         end
 
     end
@@ -487,37 +471,6 @@ SlashCmdList["IDENTIFYFRAME"] = function()
     else
         print("|cffff0000[Erro]:|r Nenhum frame detectado sob o mouse.")
     end
-end
-
-local allowedFrames = {"TargetFrame", "PlayerFrame", "FocusFrame", "PartyFrame", "RaidFrame", "ArenaFrame"}
-
-function GetTargetedFrameData()
-
-    local mouseFoci = GetMouseFoci()
-    
-    if not mouseFoci then return nil end
-
-    for _, frame in ipairs(mouseFoci) do
-
-        local debugName = frame:GetDebugName()
-        local name = tostring(debugName or "")
-        
-        for _, allowedName in ipairs(allowedFrames) do
-
-            if(allowedName == "PartyFrame" or allowedName == "RaidFrame") then
-            
-                if string.find(name, allowedName,1,true) then
-                    return true
-                end
-            else
-                if (frame.unit and (frame.unit == "player" or frame.unit == "target" or frame.unit == "focus" or frame.unit == "targettarget" or frame.unit == "boss1" or frame.unit == "boss2" or frame.unit == "boss3" or frame.unit == "boss4" or frame.unit == "boss5")) then                    
-                    return true
-                end
-            end
-        end
-    end
-    
-    return nil
 end
 
 function CCT_ActivateDragMode(_param)

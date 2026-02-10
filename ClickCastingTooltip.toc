@@ -13,7 +13,7 @@
 ## Category-zhCN: 用户界面
 ## Category-zhTW: 使用者介面
 ## Author: Thiago Franco (Topolino)
-## Version: 1.1.1
+## Version: 1.2.0
 ## RequiredDeps:
 ## X-Curse-Project-ID: 1445770
 ## SavedVariables: ClickCastingTooltipSharedDB
@@ -36,6 +36,9 @@ localization\ptBR.lua
 
 # Utilities
 Utils\3rdPartyFix.lua
+Utils\Data.lua
+Utils\Functions.lua
+Utils\VersionChecker.lua
 
 ClickCastingTooltip.lua
 AddSpell.lua

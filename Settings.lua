@@ -20,8 +20,6 @@
 --
 --------------------------------------------------------------------------------
 
-
-
 local name, mct = ...
 local L = mct.L 
 
@@ -129,15 +127,6 @@ function CCT_LoadSettings()
     scrollFrameGeneral:SetLayout("Flow")
     scrollContainerGeneral:AddChild(scrollFrameGeneral)
 
-    local btnOpenSpellSettings = AceGUI:Create("Button")
-
-    --btnOpenSpellSettings:SetText(L["buttonOpenSpellSettings"])
-    --btnOpenSpellSettings:SetWidth(200)
-    --btnOpenSpellSettings:SetCallback("OnClick", function() 
-    --    ToggleClickBindingFrame()
-    --end)
-    --scrollFrameGeneral:AddChild(btnOpenSpellSettings)
-
     local chkLockDragDrop = AceGUI:Create("CheckBox")
     local chkHideMinimapIcon = AceGUI:Create("CheckBox")
     local chkHideDeveloperCreditOnTooltips = AceGUI:Create("CheckBox")
@@ -197,11 +186,8 @@ end
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 function CCT_LoadAddActions()
-    -- Limpa o conteúdo anterior do TreeGroup
     treeW:ReleaseChildren()
 
-    -- 1. Criamos um SimpleGroup para servir de casca (Wrapper)
-    -- Usamos o layout "Fill" para que ele ocupe todo o espaço do TreeGroup
     local aceContainer = AceGUI:Create("ScrollFrame")
     aceContainer:SetLayout("Fill")
     aceContainer:SetFullWidth(true)
