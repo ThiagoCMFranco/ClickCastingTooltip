@@ -29,22 +29,32 @@ CastClickApp = LibStub("AceAddon-3.0"):NewAddon(AddonName, "AceConsole-3.0", "Ac
 local defaults = {
     profile = {
         classes = {
-            ["DRUID"] = {}, ["SHAMAN"] = {}, ["PALADIN"] = {}, ["PRIEST"] = {},
-            ["MONK"] = {}, ["EVOKER"] = {}, ["WARRIOR"] = {}, ["HUNTER"] = {},
-            ["ROGUE"] = {}, ["DEATHKNIGHT"] = {}, ["MAGE"] = {}, ["WARLOCK"] = {},
-            ["DEMONHUNTER"] = {},
+            -- Estrutura: ["CLASSE"] = { [1] = {binds}, [2] = {binds}, [3] = {binds}, [4] = {binds} }
+            ["DRUID"] = { {}, {}, {}, {} },
+            ["SHAMAN"] = { {}, {}, {}, {} },
+            ["PALADIN"] = { {}, {}, {}, {} },
+            ["PRIEST"] = { {}, {}, {}, {} },
+            ["MONK"] = { {}, {}, {}, {} },
+            ["EVOKER"] = { {}, {}, {}, {} },
+            ["WARRIOR"] = { {}, {}, {}, {} },
+            ["HUNTER"] = { {}, {}, {}, {} },
+            ["ROGUE"] = { {}, {}, {}, {} },
+            ["DEATHKNIGHT"] = { {}, {}, {}, {} },
+            ["MAGE"] = { {}, {}, {}, {} },
+            ["WARLOCK"] = { {}, {}, {}, {} },
+            ["DEMONHUNTER"] = { {}, {}, {}, {} },
         }
     }
 }
 
-function CastClickApp:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("ClickCastingTooltipDB", defaults, true)
-    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddonName, function() return self:GetOptions() end)
-    --self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddonName, "Cast Click Tooltip")
-    --self:RegisterChatCommand("ccc", function() 
-    --    Settings.OpenToCategory(self.optionsFrame:GetID()) -- Versão moderna para o menu de opções
-    --end)
-end
+--function CastClickApp:OnInitialize()
+--    self.db = LibStub("AceDB-3.0"):New("ClickCastingTooltipDB", defaults, true)
+--    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddonName, function() return self:GetOptions() end)
+--    --self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddonName, "Cast Click Tooltip")
+--    --self:RegisterChatCommand("ccc", function() 
+--    --    Settings.OpenToCategory(self.optionsFrame:GetID()) -- Versão moderna para o menu de opções
+--    --end)
+--end
 
 function CastClickApp:RefreshConfig()
     LibStub("AceConfigRegistry-3.0"):NotifyChange(AddonName)
@@ -55,6 +65,7 @@ end
 ---------------------------------------------------------
 function CastClickApp:GetOptions()
     local _, playerClass = UnitClass("player")
+    local currentSpec = GetSpecialization() or 1 -- 1 é o fallback caso não tenha spec (nível baixo)
 
     self.tmpType = self.tmpType or "spell"
     
@@ -164,11 +175,13 @@ end
                         type = "execute",
                         disabled = function() return not self.validatedID end,
                         func = function()
-                            local info = C_Spell.GetSpellInfo(self.validatedID)
-                            table.insert(self.db.profile.classes[playerClass], {
+                            -- Garante que a tabela da spec exista
+                            self.db.profile.classes[playerClass][currentSpec] = self.db.profile.classes[playerClass][currentSpec] or {}
+                                            
+                            table.insert(self.db.profile.classes[playerClass][currentSpec], {
                                 ActivationKeys = self.tmpKeys or "N",
-                                Type = self.tmpType, -- "spell" ou "macro"
-                                ID = self.validatedID, -- SpellID ou Nome da Macro
+                                Type = self.tmpType,
+                                ID = self.validatedID,
                                 SpellName = self.tmpType == "spell" and C_Spell.GetSpellInfo(self.validatedID).name or self.validatedID,
                                 Click = self.tmpClick or "Lclick"
                             })
@@ -192,21 +205,39 @@ end
     }
 
     -- Gerador dinâmico da lista de habilidades
-local classData = self.db.profile.classes[playerClass]
+local currentSpec = GetSpecialization() or 1
+-- Obtém detalhes da Spec: ID, Nome, Descrição, Ícone...
+local _, specName, _, specIcon = GetSpecializationInfo(currentSpec)
+
+-- Definimos o caminho dos dados da spec atual
+local classData = self.db.profile.classes[playerClass][currentSpec]
+
+-- Adicionamos um cabeçalho visual para o usuário saber o que está editando
+options.args.list.name = string.format(L["Config_For_Spec"] .. " %s", specName or "")
+
+-- Se quiser que o ícone da spec apareça na aba de listagem:
+options.args.list.args.specHeader = {
+    order = 0,
+    type = "description",
+    name = "|cffffd100" .. (specName or "") .. "|r",
+    image = specIcon,
+    imageWidth = 24, imageHeight = 24,
+}
+
 if classData then
     for k, v in ipairs(classData) do
         -- Tradução das siglas para nomes coloridos e legíveis
         local keyDisplay = v.ActivationKeys
-            :gsub("C", "|cff00ccff" .. L["Ctrl"] .. "|r ")
-            :gsub("S", "|cffff7d0a" .. L["Shift"] .. "|r ")
-            :gsub("A", "|cffffff00" .. L["Alt"] .. "|r ")
-            :gsub("N", "|cffaaaaaa" .. L["No_Modifier"] .. "|r")
+            :gsub("C", "|c" .. KeysColors["Ctrl"] .. L["Ctrl"] .. "|r ")
+            :gsub("S", "|c" .. KeysColors["Shift"] .. L["Shift"] .. "|r ")
+            :gsub("A", "|c" .. KeysColors["Alt"] .. L["Alt"] .. "|r ")
+            :gsub("N", "|c" .. KeysColors["No_Modifier"] .. L["No_Modifier"] .. "|r")
 
         -- Tradução do botão do mouse
         local clickDisplay = v.Click
-            :gsub("Lclick", "|cffD3AF37" .. L["Lclick"] .. "|r")
-            :gsub("Rclick", "|cffD3AF37" .. L["Rclick"] .. "|r")
-            :gsub("Mclick", "|cffD3AF37" .. L["Mclick"] .. "|r")
+            :gsub("Lclick", "|c" .. KeysColors["LClick"] .. L["Lclick"] .. "|r")
+            :gsub("Rclick", "|c" .. KeysColors["RClick"] .. L["Rclick"] .. "|r")
+            :gsub("Mclick", "|c" .. KeysColors["MClick"] .. L["Mclick"] .. "|r")
 
         options.args.list.args["item"..k] = {
             -- Exemplo de saída: [Ctrl Shift] + Esq. : Cura Encadeada
@@ -215,7 +246,7 @@ if classData then
             type = "execute",
             desc = L["Click_To_Remove_Spell"],
             confirm = true,
-            confirmText = L["Remove"] .. v.SpellName .. "?",
+            confirmText = L["Remove"] .. " |cff00ff00" .. v.SpellName .. "|r?",
             func = function() 
                 table.remove(classData, k)
                 self:RefreshConfig()
@@ -227,4 +258,55 @@ if classData then
 end
 
     return options
+end
+
+
+----------------------------------------------------
+-- CÓDIGO DE MIGRAÇÃO DE ESPECIALIZAÇÕES - INÍCIO --
+----------------------------------------------------
+---Este código de migração será mantido apenas durante o período de transição entre a estrutura inicial sem separação de especializações (até v1.1.1) para a estrutura com separação de especializações (a paritr v1.2.0), desenvolvimento realizado em 02 de fevereiro de 2026.
+---Será mantido até se passarem 6 meses ou serem lançadas 20 atualizações (o que ocorrer primeiro), sendo após isso, sinalizado com obsoleto e removido.
+----------------------------------------------------
+
+function CastClickApp:MigrateOldData()
+    local _, playerClass = UnitClass("player")
+    local currentSpec = GetSpecialization() or 1
+    local classData = self.db.profile.classes[playerClass]
+
+    if not classData or not next(classData) then return end
+
+    -- Verificamos se o primeiro item da tabela já é um atalho configurado
+    -- Se classData[1] tiver um campo "ID", ele é um dado antigo.
+    local firstItem = classData[1]
+    if type(firstItem) == "table" and firstItem.ID then
+        -- Criamos uma tabela temporária para segurar os dados antigos
+        local oldBinds = {}
+        for i = 1, #classData do
+            table.insert(oldBinds, classData[i])
+            classData[i] = nil -- Limpa a posição antiga
+        end
+
+        -- Inicializa as especializações (1 a 4)
+        for i = 1, 4 do classData[i] = {} end
+
+        -- Move os registros recuperados para a spec atual
+        for _, bind in ipairs(oldBinds) do
+            table.insert(classData[currentSpec], bind)
+        end
+
+        print(L["VersionMigration"])
+    end
+end
+
+-------------------------------------------------
+-- CÓDIGO DE MIGRAÇÃO DE ESPECIALIZAÇÕES - FIM --
+-------------------------------------------------
+
+function CastClickApp:OnInitialize()
+    self.db = LibStub("AceDB-3.0"):New("ClickCastingTooltipDB", defaults, true)
+    
+    -- Executa a migração logo após carregar o DB
+    self:MigrateOldData()
+
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddonName, function() return self:GetOptions() end)
 end
