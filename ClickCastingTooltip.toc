@@ -1,4 +1,4 @@
-## Interface: 120000, 120001
+## Interface: 120000, 120001, 120005
 ## Title: Click Casting Tooltip
 ## Notes: Add tooltips to identify spells and macros shortcuts for Click-Cast Bindings.
 ## Category-enUS: User Interface
@@ -13,7 +13,7 @@
 ## Category-zhCN: 用户界面
 ## Category-zhTW: 使用者介面
 ## Author: Thiago Franco (Topolino)
-## Version: 1.2.1
+## Version: 1.2.2
 ## RequiredDeps:
 ## X-Curse-Project-ID: 1445770
 ## SavedVariables: ClickCastingTooltipSharedDB
