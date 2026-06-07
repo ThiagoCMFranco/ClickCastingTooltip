@@ -56,5 +56,5 @@ You can check the addon changelog and development roadmap on our GitHub project 
 Find our community at https://discord.gg/M7wQQFRjaq  
 
 Help us with a donation using the methods availiable on our Discord Channel on Help Us Chat.  
-Donations: PagSeguro/PagBank (https://pag.ae/7_BDYY22Q) or PayPal.  
+Donations: PagSeguro/PagBank (https://pag.ae/81u_gUZeo) or PayPal.  
 Only for Donations from Brazil: Pix.
