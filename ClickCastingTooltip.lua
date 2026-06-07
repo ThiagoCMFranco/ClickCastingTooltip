@@ -169,6 +169,9 @@ unitType:SetTextColor(1, 1, 1)
 -- Tabela para armazenar as linhas de texto do frame
 CastClickFrame.Lines = {}
 
+local lineWidth = 200
+local fsLineWidth = 200
+
 local function UpdateHUD()
     local hasMouseover = UnitExists("mouseover")
     for _, line in ipairs(CastClickFrame.Lines) do line:Hide() end
@@ -209,7 +212,7 @@ local function UpdateHUD()
     local clickOrder = {"Lclick", "Mclick", "Rclick", "clickButton4", "clickButton5"}
 
     local lineIndex = 1
-    local lineWidth = 200
+    --local lineWidth = 200
     for activationKeys, infos in pairs(grouped) do
         -- Cabeçalho das teclas
         if not CastClickFrame.Lines[lineIndex] then
@@ -292,7 +295,7 @@ local function UpdateHUD()
                     fs:SetText(string.format("%s: %s%s", click, displayName, status))
                     fs:SetTextColor(r, g, b)
                     fs:Show()
-                    if lineWidth < fs:GetWidth() then lineWidth = fs:GetWidth() end
+                    if lineWidth < fs:GetWidth() then lineWidth = fs:GetWidth() fsLineWidth = fs:GetWidth() end
                     lineIndex = lineIndex + 1
                 end
             end
@@ -301,7 +304,7 @@ local function UpdateHUD()
 
     if lineIndex == 1 then
         CastClickFrame:SetHeight(75)
-        CastClickFrame:SetWidth(220)
+        CastClickFrame:SetWidth(lineWidth + 40)
         if(ClickCastingTooltipDB.HideWhenNoActionIsBound) then
             CastClickFrame:SetHeight(0)
             CastClickFrame:SetWidth(0)
@@ -419,7 +422,13 @@ MyAddon:SetScript("OnEvent", function(self, event)
             else
                 unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
             end
-
+            --if not InCombatLockdown() then
+            --    if lineWidth <= unitName:GetWidth() then
+            --        lineWidth = unitName:GetWidth()
+            --    else
+            --        lineWidth = fsLineWidth
+            --    end
+            --end
             
         end
 

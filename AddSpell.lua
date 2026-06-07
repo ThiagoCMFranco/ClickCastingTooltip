@@ -129,7 +129,7 @@ end
                         order = 1,
                     },
                     preview = {
-                        name = L["Result"] .. " " .. previewName,
+                        name = previewName,
                         type = "description",
                         image = previewIcon,
                         imageWidth = 36, imageHeight = 36,
