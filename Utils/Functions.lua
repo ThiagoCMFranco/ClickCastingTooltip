@@ -20,6 +20,9 @@
 --
 --------------------------------------------------------------------------------
 
+local name, CCT = ...
+local L = CCT.L 
+
 function GetTargetedFrameData()
 
     local mouseFoci = GetMouseFoci()
@@ -47,6 +50,91 @@ function GetTargetedFrameData()
     end
     
     return nil
+end
+
+function SincronizarHabilidades()
+
+    local infoVec = C_ClickBindings.GetProfileInfo()
+    
+    if not infoVec or #infoVec == 0 then
+        print("|cffff0000[Click Casting Tootlip]:|r Nenhum dado encontrado no perfil.")
+        return
+    else
+        print("|cff00ff00[Click Casting Tootlip]:|r Registrando atalhos cadastrados na interface nativa.")
+    end
+    
+    local typeLabels = {
+        [0] = "Nenhum",
+        [1] = "Spell",
+        [2] = "Macro",
+        [3] = "Interação",
+        [4] = "PetAction"
+    }
+
+    local modifiersLabels = {
+        [0] = "N",
+        [12] = "C",
+        [48] = "A",
+        [3] = "S",
+        [60] = "CA",
+        [15] = "CS",
+        [51] = "SA",
+        [63] = "CSA",
+    }
+    
+    local clickLabels = {
+        ["LeftButton"] = "Lclick",
+        ["MiddleButton"] = "Mclick",
+        ["RightButton"] = "Rclick",
+        ["Button4"] = "clickButton4",
+        ["Button5"] = "clickButton5",
+    }
+
+    local _, playerClass = UnitClass("player")
+    local currentSpec = GetSpecialization() or 1
+    CastClickApp.db.profile.classes[playerClass][currentSpec] = {}
+
+    for index, bindingInfo in ipairs(infoVec) do
+        local bType = bindingInfo.type or 0
+        local actionID = bindingInfo.actionID or 0
+        local button = bindingInfo.button or "Sem Botão"
+        local modifiers = bindingInfo.modifiers or 0
+        
+        local typeLabel = typeLabels[bType] or "Desconhecido"
+        
+        local modLabel = (modifiers > 0) and ("(Mod:" .. modifiersLabels[modifiers] .. " - " .. modifiers .. ") ") or ""
+        
+        local spellName = ""
+        if(typeLabel == "Spell") then
+        spellName = C_Spell.GetSpellInfo(actionID).name
+        end
+
+        if(typeLabel == "Macro") then
+        spellName = C_Macro.GetMacroName(actionID)
+        end
+
+        if (typeLabel == "Spell") then
+            table.insert(CastClickApp.db.profile.classes[playerClass][currentSpec], {
+                                ActivationKeys = modifiersLabels[modifiers] or "N",
+                                Type = typeLabel,
+                                ID = actionID,
+                                SpellName = spellName,
+                                Click = clickLabels[button]
+                            })
+        end
+        if (typeLabel == "Macro") then
+        table.insert(CastClickApp.db.profile.classes[playerClass][currentSpec], {
+                                ActivationKeys = modifiersLabels[modifiers] or "N",
+                                Type = typeLabel,
+                                ID = actionID,
+                                SpellName = "|cff80ccff" .. spellName .. " " .. L["Macro"] .. "|r",
+                                Click = clickLabels[button]
+                            })
+        end
+    end
+
+    ClickCastingTooltip:UpdateSettings()
+    
 end
 
 function CreateInlineIcon(atlasNameOrTexID, sizeX, sizeY, xOffset, yOffset)
