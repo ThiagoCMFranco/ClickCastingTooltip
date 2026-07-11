@@ -267,11 +267,9 @@ local function UpdateHUD()
 
                         if not (isHelpful and canAssist) and not (isHarmful and canAttack) then
                             if isHarmful then 
-                                --r, g, b = 0.8, 0.3, 0.0
                                 r, g, b = 0.8, 0, 0
                                 status = ""--" (Alvo Inválido)"
                             elseif isHelpful then
-                                --r, g, b = 0.8, 0.3, 0.0
                                 r, g, b = 0.8, 0, 0
                                 status = ""--" (Alvo Inválido)"
                             end
@@ -279,7 +277,6 @@ local function UpdateHUD()
                         end                              
 
                         if inRange == false then
-                            --r, g, b = 0.8, 0, 0 -- Vermelho: Fora de alcance
                             r, g, b = 0.6, 0.6, 0.6 -- Cinza: Fora de alcance
                             status = ""--" (Fora de Alcance)"
                         end
@@ -320,7 +317,6 @@ local function UpdateHUD()
     if (ClickCastingTooltipDB.HidePanelTitle) then
         title:Hide()
         CastClickFrame:SetHeight(40 + (lineIndex * 15))
-        --unitType:SetPoint("TOPLEFT", 10, -20)
     end
 
 end
@@ -422,13 +418,6 @@ MyAddon:SetScript("OnEvent", function(self, event)
             else
                 unitName:SetText("|c" .. classColor .. name .. "|r (" .. level .. ")")
             end
-            --if not InCombatLockdown() then
-            --    if lineWidth <= unitName:GetWidth() then
-            --        lineWidth = unitName:GetWidth()
-            --    else
-            --        lineWidth = fsLineWidth
-            --    end
-            --end
             
         end
 
@@ -481,6 +470,48 @@ SlashCmdList["IDENTIFYFRAME"] = function()
         print("|cffff0000[Erro]:|r Nenhum frame detectado sob o mouse.")
     end
 end
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("ADDON_LOADED")
+
+local function CreateClickBindingSyncButton(parent)
+    if ClickBindingSyncButton then return end
+
+    local btn = CreateFrame("Button", "ClickBindingSyncButton", parent, "UIPanelButtonTemplate")
+    btn:SetSize(405, 24)
+    btn:SetText(L["buttonSynchronize"] .. " " .. L["AddonName_Interface"])
+    
+    btn:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 4, 26)
+
+    btn:SetScript("OnClick", function(self, button, down)
+        ClickBindingFrame.SaveButton:Click()
+        SincronizarHabilidades();
+    end)
+end
+
+frame:SetScript("OnEvent", function(self, event, addonName)
+    if event == "ADDON_LOADED" then
+        if addonName == "Blizzard_ClickBindingUI" then
+            if ClickBindingFrame then
+                CreateClickBindingSyncButton(ClickBindingFrame)
+            end
+            self:UnregisterEvent("ADDON_LOADED")
+        end
+    end
+end)
+
+local frame2 = CreateFrame("Frame")
+    frame2:RegisterEvent("ADDON_LOADED")
+    frame2:SetScript("OnEvent", function(self, event, addonName)
+        if addonName == "Blizzard_ClickBindingUI" then -- Nome do addon nativo que gerencia essa UI
+            if ClickBindingFrame and ClickBindingFrame.SaveButton then
+                ClickBindingFrame.SaveButton:HookScript("OnClick", function(btn, button, down)
+                    ToggleClickBindingFrame()
+                end)
+            end
+            self:UnregisterEvent("ADDON_LOADED") -- Remove o evento para poupar memória
+        end
+    end)
 
 function CCT_ActivateDragMode(_param)
         if _param then

@@ -44,6 +44,8 @@ tinsert(UISpecialFrames, "CCTSettingsFrameName")
 
 local treeW = AceGUI:Create("TreeGroup")
 
+local selectedOption = "S"
+
 function CCT_LoadCredits()
 
     treeW:ReleaseChildren()
@@ -258,12 +260,16 @@ tree = {
     --elseif string.find(group, "Ctx") then
 
     if group == "G" then
+        selectedOption = group
         CCT_LoadSettings()
     elseif group == "A" then
+        selectedOption = group
         CCT_LoadAddActions()
     elseif group == "C" then
+        selectedOption = group
         CCT_LoadCredits()
     elseif group == "S" then
+        selectedOption = group
         CCT_LoadAbout()
     else
         print(group)
@@ -302,3 +308,11 @@ btnAbrirConfiguracoes:SetText(L["buttonOpenSettings"])
 btnAbrirConfiguracoes:SetScript("OnClick", function()
     ClickCastingTooltip:ToggleSettingsFrame()
 end)
+
+function ClickCastingTooltip:UpdateSettings()
+    if selectedOption == "A" then
+        treeW:SelectByValue("S");    
+        treeW:SelectByValue("A");
+    end
+    
+end
