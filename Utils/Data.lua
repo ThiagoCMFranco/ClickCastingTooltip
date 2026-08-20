@@ -61,4 +61,4 @@ KeysColors = {
     ["No_Modifier"] = "ffffffff",
 }
 
-AllowedFrames = {"TargetFrame", "PlayerFrame", "FocusFrame", "PartyFrame", "RaidFrame", "ArenaFrame"}
+AllowedFrames = {"TargetFrame", "PlayerFrame", "FocusFrame", "PartyFrame", "RaidFrame", "ArenaFrame", "CompactPartyMemberFrame", "CompactRaidFrame", "ArenaEnemyFrame"}
