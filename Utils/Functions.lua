@@ -31,18 +31,20 @@ function GetTargetedFrameData()
 
     for _, frame in ipairs(mouseFoci) do
 
-        local debugName = frame:GetDebugName()
         local name = tostring(debugName or "")
         
-        for _, allowedName in ipairs(AllowedFrames) do
+        if frame.unit then
 
-            if(allowedName == "PartyFrame" or allowedName == "RaidFrame") then
-            
-                if string.find(name, allowedName,1,true) then
-                    return true
-                end
-            else
-                if (frame.unit and (frame.unit == "player" or frame.unit == "target" or frame.unit == "focus" or frame.unit == "targettarget" or frame.unit == "boss1" or frame.unit == "boss2" or frame.unit == "boss3" or frame.unit == "boss4" or frame.unit == "boss5")) then                    
+            local u = frame.unit
+            if u == "player" or u == "target" or u == "focus" or u == "targettarget" or 
+               string.find(u, "^boss%d+$") or string.find(u, "^party%d+$") or string.find(u, "^raid%d+$") then
+                return true
+            end
+        end
+    
+        if name then
+            for _, allowedName in ipairs(AllowedFrames) do
+                if string.find(name, allowedName, 1, true) then
                     return true
                 end
             end
@@ -57,10 +59,10 @@ function SincronizarHabilidades()
     local infoVec = C_ClickBindings.GetProfileInfo()
     
     if not infoVec or #infoVec == 0 then
-        print("|cffff0000[Click Casting Tootlip]:|r Nenhum dado encontrado no perfil.")
+        print(L["BindingsSyncError"])
         return
     else
-        print("|cff00ff00[Click Casting Tootlip]:|r Registrando atalhos cadastrados na interface nativa.")
+        print(L["BindingsSyncSuccess"])
     end
     
     local typeLabels = {
