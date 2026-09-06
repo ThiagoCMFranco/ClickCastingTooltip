@@ -33,6 +33,8 @@ Version_Data.lua
 # Localization
 localization\enUS.lua
 localization\ptBR.lua
+localization\esMX.lua
+localization\esES.lua
 
 # Utilities
 Utils\3rdPartyFix.lua
