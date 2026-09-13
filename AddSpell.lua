@@ -86,7 +86,7 @@ if self.searchQuery and self.searchQuery ~= "" then
         -- GetMacroInfo aceita tanto o Índice quanto o Nome da macro
         local name, icon = GetMacroInfo(self.searchQuery)
         if name then
-            previewName = "|cff80ccff" .. name .. " " .. L["Macro"] .. "|r"
+            previewName = "|cff80ccff" .. name .. " [" .. L["Macro"] .. "]|r"
             previewIcon = icon
             self.validatedID = name -- Usamos o nome como ID para macros
         end
@@ -194,6 +194,17 @@ end
                     },
                 },
             },
+            addBtnSync = {
+                        name = L["buttonSynchronize"],
+                        desc = L["Synchronize_Description"],
+                        type = "execute",
+                        func = function()
+                            SincronizarHabilidades()
+                            self:RefreshConfig()
+                        end,
+                        order = 0,
+                        width = 25,
+            },
             list = {
                 order = 3,
                 name = L["Bind_Spell_Macro_List_Label"],
@@ -238,11 +249,20 @@ if classData then
             :gsub("Lclick", "|c" .. KeysColors["LClick"] .. L["Lclick"] .. "|r")
             :gsub("Rclick", "|c" .. KeysColors["RClick"] .. L["Rclick"] .. "|r")
             :gsub("Mclick", "|c" .. KeysColors["MClick"] .. L["Mclick"] .. "|r")
+            :gsub("clickButton4", "|c" .. KeysColors["clickButton4"] .. L["clickButton4"] .. "|r")
+            :gsub("clickButton5", "|c" .. KeysColors["clickButton5"] .. L["clickButton5"] .. "|r")
+
+        local commandDisplay = ""
+        if (v.Type == "Spell") then
+            commandDisplay = v.SpellName
+        else
+            commandDisplay = "|cff80CCFF" .. v.SpellName .. " [" .. L["Macro"] .. "]|r"
+        end
 
         options.args.list.args["item"..k] = {
             -- Exemplo de saída: [Ctrl Shift] + Esq. : Cura Encadeada
             name = string.format("|cffffee00[%s]|r + |cffffffff%s|r : |cff00ff00%s|r", 
-                                 keyDisplay, clickDisplay, v.SpellName),
+                                 keyDisplay, clickDisplay, commandDisplay),
             type = "execute",
             desc = L["Click_To_Remove_Spell"],
             confirm = true,
