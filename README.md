@@ -1,5 +1,7 @@
 # ClickCastingTooltip
 
+[![PayPal Donate](https://img.shields.io/badge/Donate-PayPal-blue?style=for-the-badge)](https://www.paypal.com/donate/?business=4VQNAB2VMV4J8&no_recurring=0&currency_code=BRL&locale.x=EN) [![Doar com PagBank - é rápido, grátis e seguro!](https://img.shields.io/badge/Donate_Brazil-PagSeguro/PagBank-Green?style=for-the-badge)](https://pag.ae/81u_gUZeo/button)
+
 This is a World of Warcraft addon.  
 
 Add a Healbot like tooltip panel for spells added to the Click Casting Binding feature.  
@@ -56,5 +58,5 @@ You can check the addon changelog and development roadmap on our GitHub project 
 Find our community at https://discord.gg/M7wQQFRjaq  
 
 Help us with a donation using the methods availiable on our Discord Channel on Help Us Chat.  
-Donations: PagSeguro/PagBank (https://pag.ae/81u_gUZeo) or PayPal.  
+Donations: PagSeguro/PagBank (https://pag.ae/81u_gUZeo) or PayPal (https://www.paypal.com/donate/?business=4VQNAB2VMV4J8).  
 Only for Donations from Brazil: Pix.
