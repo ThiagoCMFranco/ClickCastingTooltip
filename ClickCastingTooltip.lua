@@ -410,8 +410,13 @@ MyAddon:SetScript("OnEvent", function(self, event)
             local _, className = UnitClass("mouseover")
             local classColor = ClassHexColors["X"]
             local u = ValidarUnidade("mouseover")
-            if(u == "A" or u == "E") then
-                classColor = ClassHexColors[className]
+            if (u == "A" or u == "E") and className then
+                local success, color = pcall(function()
+                    return ClassHexColors[className]
+                end)
+                if success and color then
+                    classColor = color
+                end
             end
             if (level == -1) then
                 unitName:SetText("|c" .. classColor .. name .. " " .. CreateInlineIcon("UI-HUD-UnitFrame-Target-HighLevelTarget_Icon", 10,12) .."|r")
