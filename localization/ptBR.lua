@@ -81,3 +81,4 @@ L["BindingsSyncSuccess"] = "|cff00ff00[" .. L["AddonName_Interface"] .. "]:|r Re
 L["BindingsSyncError"] = "|cffff0000[" .. L["AddonName_Interface"] .. "]:|r Nenhum dado encontrado para sincronizar."
 L["buttonSynchronize"] = "Sincronizar"
 L["Synchronize_Description"] = "Sincroniza com os dados prenchidos nas configurações nativas de vinculação de atalhos de lançamento com clique."
+L["Version_Disclaimer"] = "Você está utilizando o %s em World of Warcraft: Forever, a compatibilidade com esta versão ainda está em testes, em caso de problemas avise-nos (%s)"

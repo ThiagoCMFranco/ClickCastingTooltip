@@ -158,3 +158,41 @@ function CreateInlineIcon(atlasNameOrTexID, sizeX, sizeY, xOffset, yOffset)
 
 	return ''
 end
+
+local githubLink = "https://github.com/ThiagoCMFranco/ClickCastingTooltip"
+
+-- Lista de versões que estão em fase de testes
+local versoesEmTeste = {
+    "1.60.1",
+}
+
+function CCT.VerificarVersaoDoJogo(silent)
+    local gameVersion, build, date, tocVersion = GetBuildInfo()
+    
+    local exibirMensagem = false
+    
+    for _, versao in ipairs(versoesEmTeste) do
+        if gameVersion == versao then
+            exibirMensagem = true
+            break
+        end
+    end
+    
+    if exibirMensagem then
+        local mensagem = string.format(
+            L["Version_Disclaimer"],
+            L["AddonName_Interface"],
+            githubLink
+        )
+
+        if silent then
+            return "\n\n\n\n|cFFFFFF00" .. mensagem .. "|r\n\n"
+        else
+            print(mensagem)
+        end
+
+        return ""
+    end
+
+    return ""
+end

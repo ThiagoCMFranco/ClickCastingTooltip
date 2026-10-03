@@ -74,6 +74,7 @@ eventListenerFrame:SetScript("OnEvent", function(self, event, ...)
         local name = ...
         local addonName = L["AddonName"]
         if name == addonName then
+            CCT.VerificarVersaoDoJogo()
             ClickCastingTooltipMinimapButton:Register(L["AddonName"], miniButton, ClickCastingTooltipSharedDB.minimap)
         end
 	end
