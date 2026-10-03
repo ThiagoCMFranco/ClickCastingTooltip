@@ -81,3 +81,4 @@ L["BindingsSyncSuccess"] = "|cff00ff00[" .. L["AddonName_Interface"] .. "]:|r Re
 L["BindingsSyncError"] = "|cffff0000[" .. L["AddonName_Interface"] .. "]:|r No data found to synchronize."
 L["buttonSynchronize"] = "Synchronize"
 L["Synchronize_Description"] = "Synchronizes with the data entered in the native click-to-cast keybinding settings."
+L["Version_Disclaimer"] = "You are using %s with World of Warcraft: Forever; compatibility with this version is still being tested. Please let us know if you encounter any issues (%s)."
