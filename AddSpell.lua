@@ -65,7 +65,7 @@ end
 ---------------------------------------------------------
 function CastClickApp:GetOptions()
     local _, playerClass = UnitClass("player")
-    local currentSpec = GetSpecialization() or 1 -- 1 é o fallback caso não tenha spec (nível baixo)
+    local currentSpec = (GetSpecialization and GetSpecialization()) or 1 -- 1 é o fallback caso não tenha spec (nível baixo)
 
     self.tmpType = self.tmpType or "spell"
     
@@ -216,9 +216,9 @@ end
     }
 
     -- Gerador dinâmico da lista de habilidades
-local currentSpec = GetSpecialization() or 1
+local currentSpec = (GetSpecialization and GetSpecialization()) or 1
 -- Obtém detalhes da Spec: ID, Nome, Descrição, Ícone...
-local _, specName, _, specIcon = GetSpecializationInfo(currentSpec)
+local _, specName, _, specIcon = (GetSpecializationInfo and GetSpecializationInfo(currentSpec)) or {"","","",""}
 
 -- Definimos o caminho dos dados da spec atual
 local classData = self.db.profile.classes[playerClass][currentSpec]

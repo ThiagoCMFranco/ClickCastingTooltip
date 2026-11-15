@@ -20,5 +20,5 @@
 --
 --------------------------------------------------------------------------------
 
-C_CCT_VERSION_UID = 1003006
-C_CCT_VERSION_SEMANTIC_NUMBER = "1.3.6"
+C_CCT_VERSION_UID = 1003008
+C_CCT_VERSION_SEMANTIC_NUMBER = "1.3.8"
