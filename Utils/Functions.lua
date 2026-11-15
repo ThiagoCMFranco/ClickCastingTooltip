@@ -93,7 +93,7 @@ function SincronizarHabilidades()
     }
 
     local _, playerClass = UnitClass("player")
-    local currentSpec = GetSpecialization() or 1
+    local currentSpec = (GetSpecialization and GetSpecialization()) or 1
     CastClickApp.db.profile.classes[playerClass][currentSpec] = {}
 
     for index, bindingInfo in ipairs(infoVec) do
