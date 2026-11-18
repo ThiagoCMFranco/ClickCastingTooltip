@@ -183,6 +183,7 @@ end
                                 Type = self.tmpType,
                                 ID = self.validatedID,
                                 SpellName = self.tmpType == "spell" and C_Spell.GetSpellInfo(self.validatedID).name or self.validatedID,
+                                SpellRank = getSpellRankById(self.validatedID),
                                 Click = self.tmpClick or "Lclick"
                             })
                             -- Reset pós-adição
@@ -255,6 +256,9 @@ if classData then
         local commandDisplay = ""
         if (v.Type == "Spell") then
             commandDisplay = v.SpellName
+            if v.SpellRank and v.SpellRank ~= '' then
+                 commandDisplay = v.SpellName .. " |cFF9999FF(" ..v.SpellRank .. ")|r"
+            end
         else
             commandDisplay = "|cff80CCFF" .. v.SpellName .. " [" .. L["Macro"] .. "]|r"
         end

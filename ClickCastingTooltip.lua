@@ -196,7 +196,7 @@ local function UpdateHUD()
     end
 
     local _, playerClass = UnitClass("player")
-    local currentSpec = GetSpecialization() or 1
+    local currentSpec = (GetSpecialization and GetSpecialization()) or 1
     local classData = CastClickApp.db.profile.classes[playerClass][currentSpec]
     if not classData then return end
 
@@ -265,6 +265,10 @@ local function UpdateHUD()
                         local isHelpful = C_Spell.IsSpellHelpful(info.SpellName)
                         local isHarmful = C_Spell.IsSpellHarmful(info.SpellName)
                         local idDeadOrGhost = UnitIsDeadOrGhost("mouseover")
+
+                        if info.SpellRank and info.SpellRank ~= '' then
+                            displayName = displayName .. " |cFF9999FF(" ..info.SpellRank .. ")|r"
+                        end
 
                         if not (isHelpful and canAssist) and not (isHarmful and canAttack) then
                             if isHarmful then 
