@@ -54,6 +54,21 @@ function GetTargetedFrameData()
     return nil
 end
 
+function getSpellRankById(spellID)
+    local index = 1
+    while true do
+        local spellName, spellSubName = C_SpellBook.GetSpellBookItemName(index, Enum.SpellBookSpellBank.Player)
+        if not spellName then break end
+        
+        local info = C_SpellBook.GetSpellBookItemInfo(index, Enum.SpellBookSpellBank.Player)
+        if info and info.spellID == spellID then
+            return spellSubName
+        end
+        
+        index = index + 1
+    end
+end
+
 function SincronizarHabilidades()
 
     local infoVec = C_ClickBindings.GetProfileInfo()
@@ -121,6 +136,7 @@ function SincronizarHabilidades()
                                 Type = typeLabel,
                                 ID = actionID,
                                 SpellName = spellName,
+                                SpellRank = getSpellRankById(actionID),
                                 Click = clickLabels[button]
                             })
         end
